@@ -1,0 +1,49 @@
+# Video file, RTSP URL, or integer webcam index such as 0.
+source: "../input.mp4"
+
+# Folder convention:
+# references/
+#   apple/
+#     normal/*.jpg
+#     damaged/*.jpg
+#   orange/
+#     normal/*.jpg
+#     damaged/*.jpg
+#
+# A one-level folder like references/box/*.jpg is also supported and becomes
+# object=box, state=default.
+reference_root: "../references"
+
+output_dir: "../runs/demo"
+
+model:
+  weights: "yoloe-26s-seg.pt"
+  device: "auto"
+  imgsz: 960
+  conf: 0.25
+  iou: 0.50
+  tracker: "bytetrack.yaml"
+
+counting:
+  # Normalized [x, y] coordinates. This example is a horizontal line at 65% height.
+  line:
+    - [0.08, 0.65]
+    - [0.92, 0.65]
+
+  # any | positive_to_negative | negative_to_positive
+  # The sign depends on the order of the two line endpoints above.
+  direction: "any"
+
+  # Classification/state smoothing across frames for each ByteTrack ID.
+  vote_window: 9
+  min_votes: 3
+
+  # Once an ID crosses and is counted, that same ID cannot count again.
+  count_once_per_track: true
+
+render:
+  show_window: true
+  save_video: true
+  draw_confidence: true
+  draw_track_id: true
+  hud_max_rows: 12
