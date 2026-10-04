@@ -53,6 +53,46 @@ pip install -e .
 
 YOLOE-26 requires a recent Ultralytics release; this project asks for `ultralytics>=8.4.0`.
 
+## iPhone / browser test UI
+
+A deliberately small Gradio interface is included for testing the complete reference → vision → tracking → counting loop from an iPhone.
+
+Install the web extras:
+
+```bash
+pip install -e ".[web]"
+```
+
+Launch it with a temporary HTTPS link:
+
+```bash
+python app.py --share
+```
+
+Gradio will print a `https://....gradio.live` address. Open that address in Safari on the iPhone.
+
+The test page lets you:
+
+1. Add up to **4 labeled reference groups**, with multiple example photos in each group.
+2. Use labels such as `apple::normal`, `apple::damaged`, `box::good`, or simply `forklift`.
+3. Upload a short iPhone video.
+4. Move a horizontal counting line with one slider.
+5. Run YOLOE-26 + ByteTrack and receive an annotated video, counts, and the event CSV.
+
+For reliability on phones, the web path normalizes uploaded reference photos to oriented JPEGs (including HEIC when the web extras are installed), transcodes the input video to H.264 before OpenCV processes it, and transcodes the annotated result back to Safari-friendly H.264.
+
+For the first test, use a **5–20 second clip** with clearly visible objects moving across the line. The first model run may take longer while Ultralytics downloads the YOLOE weights.
+
+The shared Gradio URL is temporary. Anyone who has the URL can reach the page unless you enable basic authentication. Optional authentication can be set before launch:
+
+```powershell
+$env:REFVISION_USER="matt"
+$env:REFVISION_PASSWORD="choose-a-password"
+python app.py --share
+```
+
+Without `--share`, the server still listens on `0.0.0.0` for local/LAN testing.
+
 ## Configure
 
 Copy `configs/example.yaml` and edit:
@@ -147,8 +187,9 @@ The sign is determined by the order of the two line endpoints. If direction matt
 - **Ultralytics YOLOE-26 / YOLO26 ecosystem** for visual-prompt object detection.
 - **ByteTrack via Ultralytics tracking mode** for persistent object IDs.
 - OpenCV for video I/O and annotation.
+- Gradio for the optional phone/browser test interface.
 
-The custom portion in this repository is the multi-reference catalog, reference-montage builder, prompt preparation, per-track majority voting, directional line crossing, count aggregation, event logging, and rendering pipeline.
+The custom portion in this repository is the multi-reference catalog, reference-montage builder, prompt preparation, per-track majority voting, directional line crossing, count aggregation, event logging, rendering pipeline, and phone-test wrapper.
 
 ## Licensing note
 
