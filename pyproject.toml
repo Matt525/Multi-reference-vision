@@ -20,6 +20,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.6"]
+web = [
+  "gradio>=5.0,<7",
+  "imageio-ffmpeg>=0.6",
+  "pillow-heif>=0.20",
+]
 
 [project.scripts]
 refvision = "refvision.cli:main"
